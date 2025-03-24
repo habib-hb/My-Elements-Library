@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Number Counter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .spacer {
+      height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+    }
+    
+    .counter-section {
+      padding: 50px 0;
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+    }
+    
+    .counter-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .counter-box {
+      padding: 20px;
+      margin: 20px;
+    }
+    
+    .counter {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #3498db;
+    }
+    
+    .counter-title {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="spacer">
+    <h1>Scroll Down to See Counter Animation</h1>
+  </div>
+  
+  <section class="counter-section">
+    <div class="counter-container">
+      <div class="counter-box">
+        <div class="counter" data-target="1500">0</div>
+        <div class="counter-title">Happy Clients</div>
+      </div>
+      
+      <div class="counter-box">
+        <div class="counter" data-target="850">0</div>
+        <div class="counter-title">Projects Completed</div>
+      </div>
+      
+      <div class="counter-box">
+        <div class="counter" data-target="25000">0</div>
+        <div class="counter-title">Hours Worked</div>
+      </div>
+      
+      <div class="counter-box">
+        <div class="counter" data-target="120">0</div>
+        <div class="counter-title">Awards Won</div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="spacer">
+    <h1>Scroll Back Up to Trigger Animation Again</h1>
+  </div>
+  
+  <script>
+    // Intersection Observer to detect when counters are visible
+    const observerOptions = {
+      threshold: 0.5
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // If the element is visible
+        if (entry.isIntersecting) {
+          // Get all counters within the intersecting element
+          const counters = entry.target.querySelectorAll('.counter');
+          
+          counters.forEach(counter => {
+            // Skip if already animated
+            if (counter.classList.contains('animated')) return;
+            
+            counter.classList.add('animated');
+            
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000; // Animation duration in milliseconds
+            const stepTime = 1;
+            const initialValue = 0;
+            
+            // Calculate increment per step
+            // We want smaller increments for larger numbers to make animation smoother
+            let increment = target / (duration / stepTime);
+            if (increment < 1) increment = 1;
+            
+            let currentValue = initialValue;
+            const updateCounter = () => {
+              currentValue += increment;
+              
+              // When we reach target value, stop and set exact target
+              if (currentValue >= target) {
+                counter.textContent = target.toLocaleString();
+                return;
+              }
+              
+              // Update the counter display
+              counter.textContent = Math.floor(currentValue).toLocaleString();
+              
+              // Call this function again after a delay
+              setTimeout(updateCounter, stepTime);
+            };
+            
+            updateCounter();
+          });
+        } else {
+          // When element scrolls out of view, reset the animation state
+          const counters = entry.target.querySelectorAll('.counter');
+          counters.forEach(counter => {
+            counter.classList.remove('animated');
+          });
+        }
+      });
+    }, observerOptions);
+    
+    // Start observing the counter section
+    const counterSection = document.querySelector('.counter-section');
+    observer.observe(counterSection);
+  </script>
+</body>
+</html>

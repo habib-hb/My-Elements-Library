@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload with Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .upload-container {
+            max-width: 400px;
+            margin: auto;
+        }
+        progress {
+            width: 100%;
+            height: 20px;
+        }
+        #status {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <h2>Upload Video</h2>
+        <input type="file" id="fileInput" accept="video/*">
+        <button onclick="uploadFile()">Upload</button>
+        <br><br>
+        <progress id="progressBar" value="0" max="100"></progress>
+        <p id="status"></p>
+    </div>
+
+    <script>
+       function uploadFile() {
+    let fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length === 0) {
+        alert('Please select a file first.');
+        return;
+    }
+
+    let file = fileInput.files[0];
+    let formData = new FormData();
+    formData.append('video', file); // Key must match `$_FILES['video']`
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', 'upload.php', true); 
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Ensure proper request handling
+
+    xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+            let percent = (event.loaded / event.total) * 100;
+            document.getElementById('progressBar').value = percent;
+            document.getElementById('status').innerText = `Uploading... ${Math.round(percent)}%`;
+        }
+    };
+
+    xhr.onload = function() {
+        console.log(xhr.responseText); // Debug response
+        if (xhr.status == 200) {
+            document.getElementById('status').innerText = 'Upload successful!';
+        } else {
+            document.getElementById('status').innerText = 'Upload failed!';
+        }
+    };
+
+    xhr.onerror = function() {
+        document.getElementById('status').innerText = 'Upload error!';
+    };
+
+    xhr.send(formData);
+}
+    </script>
+
+</body>
+</html>

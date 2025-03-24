@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Video to Bunny Stream</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+</head>
+<body>
+  <h1>Upload Your Video</h1>
+  <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+    <input type="file" name="videoFile" accept="video/*" required>
+    <button type="submit">Upload Video</button>
+  </form>
+  <div id="videoContainer"></div>
+
+
+  <p>HLS video</p>
+  <video 
+    id="my-video" 
+    class="video-js vjs-default-skin vjs-big-play-centered" 
+    controls 
+    preload="auto" 
+    width="640" 
+    height="360">
+    <source src="https://vz-bb9f9f00-79f.b-cdn.net/a40c7301-c117-44d0-b23d-890bbb07c985/playlist.m3u8" type="application/x-mpegURL">
+    <!-- <source src="https://vz-bb9f9f00-79f.b-cdn.net/64635bb0-4603-4622-943c-3b3f11f889d4/playlist.m3u8" type="application/x-mpegURL"> -->
+  </video>
+
+  <!-- Video.js Core -->
+  <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+  
+  <!-- Video.js HLS Support -->
+  <script src="https://unpkg.com/@videojs/http-streaming@2.16.0/dist/videojs-http-streaming.min.js"></script>
+  
+  <!-- Quality Selector plugin -->
+  <script src="https://unpkg.com/videojs-contrib-quality-levels@2.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://unpkg.com/videojs-http-source-selector@1.1.6/dist/videojs-http-source-selector.min.js"></script>
+  
+  <script>
+    // Initialize player
+    var player = videojs('my-video', {
+      responsive: true,
+      fluid: true,
+      plugins: {
+        httpSourceSelector: {
+          default: 'auto'
+        }
+      }
+    });
+    
+    // Enable the quality selector plugin
+    player.httpSourceSelector();
+    
+   
+  </script>
+</body>
+</html>
